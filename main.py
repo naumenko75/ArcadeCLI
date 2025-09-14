@@ -1,109 +1,159 @@
-import operator
 from colorama import Fore, init
 init(autoreset=True)
 
-
-OPERATORS = {
-    '+': (1, operator.add, 2, 'left'),
-    '-': (1, operator.sub, 2, 'left'),
-    '*': (2, operator.mul, 2, 'left'),
-    '/': (2, operator.truediv, 2, 'left'),
-    '^': (3, operator.pow, 2, 'right'),
-    'u+': (4, operator.pos, 1, 'right'),
-    'u-': (4, operator.neg, 1, 'right')
-}
-
-HELP_MESSAGE = ('\n· <expression> — just type a mathematical expression to calculate it\n'
-                '· help — show this list\n'
-                '· quit, exit — exit the program\n')
+HELP_MESSAGE = (
+    '\n· <expression> — just type a mathematical expression to calculate it\n'
+    '· help — show this list\n'
+    '· quit, exit — exit the program\n')
 
 
 def process_command(command):
     command = command.strip().lower()
 
+    # Обработка пустой команды
     if not command:
         return True
 
+    # Обработка команды выхода
     if command in ('quit', 'exit'):
         return False
 
-    elif command[0].isdigit() or command[0] in ('+', '-', '.'):
-        print(arithmetic_eval(command))
+    # Обработка математического выражения
+    elif command[0] in '01234567890.-+^/*':
+        try:
+            print(calculate(command))
+        except Exception as e:
+            print(f'Calculation error: {e}')
 
+    # Обработка команды помощи
     elif command == 'help':
         print(HELP_MESSAGE)
 
+    # Обработка неизвестной команды
     else:
         print(f'Unknown command: {command}')
 
     return True
 
 
-def arithmetic_eval(formula):
-    formula = formula.replace(' ', '')
-
-    def parse(formula_string):
+def calculate(formula):
+    # Функция парсинга
+    def parse(s):
+        s = s.replace(' ', '')
+        tokens = []
         number = ''
-        prev_token = None
-        for s in formula_string:
-            if s in '1234567890.':
-                number += s
-            else:
-                if number:
-                    yield int(number) if not number.count('.') else float(number)
-                    prev_token = int(number) if not number.count('.') else float(number)
-                    number = ''
-                if s in OPERATORS or s in "()":
-                    if s in '+-':
-                        if prev_token is None or prev_token in OPERATORS or prev_token == '(':
-                            yield 'u+' if s == '+' else 'u-'
-                        else:
-                            yield s
-                    else:
-                        yield s
-                    prev_token = s
-        if number:
-            yield int(number) if not number.count('.') else float(number)
 
-    def shunting_yard(parsed_formula):
-        stack = []
-        for token in parsed_formula:
-            if token in OPERATORS:
-                while stack and stack[-1] != "(" and (
-                    (OPERATORS[token][0] < OPERATORS[stack[-1]][0]) or
-                    (OPERATORS[token][0] == OPERATORS[stack[-1]][0] and OPERATORS[token][2] == 'left')
-                ):
-                    yield stack.pop()
-                stack.append(token)
-            elif token == ")":
-                while stack:
-                    x = stack.pop()
-                    if x == "(":
-                        break
-                    yield x
-            elif token == "(":
-                stack.append(token)
-            else:
-                yield token
-        while stack:
-            yield stack.pop()
+        for i, char in enumerate(s):
+            if char in '0123456789.':
+                if char == '.':
+                    if '.' in number:
+                        raise SyntaxError(
+                            'multiple decimal points used in number.')
+                number += char
 
-    def calc(polish):
-        stack = []
-        for token in polish:
-            if token in OPERATORS:
-                arity = OPERATORS[token][2]
-                if arity == 1:
-                    x = stack.pop()
-                    stack.append(OPERATORS[token][1](x))
-                else:
-                    y, x = stack.pop(), stack.pop()
-                    stack.append(OPERATORS[token][1](x, y))
-            else:
-                stack.append(token)
-        return stack[0] if stack else 0
+            elif not number and char in '+-':
+                # Обработка унарных операторов
+                tokens.append(char)
 
-    return calc(shunting_yard(parse(formula)))
+            elif char in '^*/+-':
+                if not number:
+                    raise SyntaxError('missing operand before operator.')
+
+                # Добавляем число
+                tokens.append(float(number) if '.' in number else int(number))
+                # Добавляем оператор
+                tokens.append(char)
+                number = ''
+
+            else:
+                raise SyntaxError(f"extraneous character '{char}' used.")
+
+        # Добавляем последнее число
+        if not number:
+            raise SyntaxError('expression ends with operator.')
+        tokens.append(float(number) if '.' in number else int(number))
+
+        return tokens
+
+    # Функция вычисления
+    def evaluate(tokens):
+        # Функция для определения приоритета операторов
+        def precedence(op):
+            if op == '^':
+                return 4
+            elif op in '*/':
+                return 3
+            elif op in '+-':
+                return 2
+            return 0
+
+        # Функция для применения оператора к операндам
+        def apply_operator(operators, values):
+            operator = operators.pop()
+            right = values.pop()
+            left = values.pop()
+
+            if operator == '^':
+                result = left ** right
+            elif operator == '*':
+                result = left * right
+            elif operator == '/':
+                if right == 0:
+                    raise ZeroDivisionError("division by zero")
+                result = left / right
+            elif operator == '+':
+                result = left + right
+            elif operator == '-':
+                result = left - right
+
+            values.append(result)
+
+        # Конвертируем инфиксную запись в RPN и вычисляем
+        operators = []
+        values = []
+
+        i = 0
+        while i < len(tokens):
+            token = tokens[i]
+
+            if isinstance(token, (int, float)):
+                values.append(token)
+
+            elif token in '^*/+-':
+                # Обработка унарных операторов
+                if (i == 0 or
+                        (i > 0 and isinstance(tokens[i - 1], str) and
+                         tokens[i - 1] in '^*/+-')):
+                    # Это унарный оператор
+                    if token == '-':
+                        values.append(0)
+                        operators.append('-')
+                    elif token == '+':
+                        # Унарный плюс можно игнорировать
+                        pass
+                    i += 1
+                    continue
+
+                # Для бинарных операторов
+                while (operators and operators[-1] != '(' and
+                       precedence(operators[-1]) >= precedence(token)):
+                    apply_operator(operators, values)
+                operators.append(token)
+
+            i += 1
+
+        # Применяем оставшиеся операторы
+        while operators:
+            apply_operator(operators, values)
+
+        result = values[0]
+
+        # Возвращаем int если результат целый, иначе float
+        if isinstance(result, float) and result.is_integer():
+            return int(result)
+        return result
+
+    return evaluate(parse(formula))
 
 
 def main():
@@ -115,8 +165,10 @@ def main():
             if not process_command(user_input):
                 break
         except KeyboardInterrupt:
-            print("\nTerminating the program.", end='')
+            print('\nTerminating the program.', end='')
             break
+        except Exception as e:
+            print(f'Unexpected error: {e}')
 
 
 if __name__ == '__main__':
