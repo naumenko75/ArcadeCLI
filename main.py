@@ -1,15 +1,14 @@
-import operator
 from colorama import Fore, init
-init(autoreset=True)
+from calculations import evaluate_expression
+from games import game_mode
 
-OPERATORS = {'+': (1, operator.add), '-': (1, operator.sub),
-             '*': (2, operator.mul), '/': (2, operator.truediv),
-             '^': (3, operator.pow)}
+init(autoreset=True)
 
 HELP_MESSAGE = (
     '\n· <expression> — just type a mathematical expression to calculate it\n'
     '· help — show this list\n'
-    '· quit, exit — exit the program\n')
+    '· quit, exit — exit the program\n'
+    '· games — select a mini-game from the list\n')
 
 
 def process_command(command):
@@ -19,65 +18,25 @@ def process_command(command):
         return True
 
     if command in ('quit', 'exit'):
+        print('Goodbye!')
         return False
 
     elif command == 'help':
         print(HELP_MESSAGE)
 
-    else:
+    elif command == 'games':
+        game_mode()
+
+    elif not command[0].isalpha():
         try:
-            print(calculate(command))
+            print(evaluate_expression(command))
         except Exception as e:
             print(f'Calculation error: {e}')
 
+    else:
+        print(f"Unknown command '{command}'.")
+
     return True
-
-
-def calculate(formula):
-    def parse(formula_string):
-        number = ''
-        for s in formula_string:
-            if s in '1234567890.':
-                number += s
-            elif number:
-                yield float(number)
-                number = ''
-            if s in OPERATORS or s in "()":
-                yield s
-        if number:
-            yield float(number)
-
-    def shunting_yard(parsed_formula):
-        stack = []
-        for token in parsed_formula:
-            if token in OPERATORS:
-                while stack and stack[-1] != "(" and OPERATORS[token][0] <= OPERATORS[stack[-1]][0]:
-                    yield stack.pop()
-                stack.append(token)
-            elif token == ")":
-                while stack:
-                    x = stack.pop()
-                    if x == "(":
-                        break
-                    yield x
-            elif token == "(":
-                stack.append(token)
-            else:
-                yield token
-        while stack:
-            yield stack.pop()
-
-    def evaluate(polish):
-        stack = []
-        for token in polish:
-            if token in OPERATORS:
-                y, x = stack.pop(), stack.pop()
-                stack.append(OPERATORS[token][1](x, y))
-            else:
-                stack.append(token)
-        return stack[0]
-
-    return evaluate(shunting_yard(parse(formula)))
 
 
 def main():
