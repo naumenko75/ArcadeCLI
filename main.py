@@ -1,37 +1,53 @@
 from colorama import Fore, init
-from calculations import evaluate_expression
-from games import game_mode
+from games import game_mode, start_game_by_input
+from divisors import divisors_mode
 
 init(autoreset=True)
 
 HELP_MESSAGE = (
-    '\n· <expression> — just type a mathematical expression to calculate it\n'
-    '· help — show this list\n'
-    '· quit, exit — exit the program\n'
-    '· games — select a mini-game from the list\n')
+    "\n· help — show this list\n"
+    "· quit — exit the program\n"
+    "· games — enter game selection mode\n"
+    "· game [name/number] — quick launch a specific game\n"
+    "· divisors [number] — show the number of divisors for a given number\n"
+    "· divisors [start] [end] — find the number with the most divisors in a range\n")
 
 
 def process_command(command):
-    command = command.strip().lower()
+    """
+    Processes the command and its arguments entered by the user.
+    :param command: the string with a command
+    :return: True (continue program) or False (exit program)
+    """
+    command = command.strip()
 
     if not command:
         return True
 
-    if command in ('quit', 'exit'):
-        print('Goodbye!')
+    parts = command.split()
+    cmd = parts[0].lower()
+    args = parts[1:]
+
+    if cmd in ('quit', 'exit'):
+        print("Goodbye!")
         return False
 
-    elif command == 'help':
+    elif cmd in ('help', '?'):
         print(HELP_MESSAGE)
 
-    elif command == 'games':
+    elif cmd == 'games':
         game_mode()
 
-    elif not command[0].isalpha():
-        try:
-            print(evaluate_expression(command))
-        except Exception as e:
-            print(f'Calculation error: {e}')
+    elif cmd == 'game':
+        # Quick launch specific game
+        if not args:
+            print(f"{Fore.YELLOW}Usage: game [game_number] or game [game_name]{Fore.RESET}")
+            print(f"Type {Fore.CYAN}games{Fore.RESET} to see available games")
+        else:
+            start_game_by_input(" ".join(args))
+
+    elif cmd == 'divisors':
+        divisors_mode(args)
 
     else:
         print(f"Unknown command '{command}'.")
@@ -40,8 +56,8 @@ def process_command(command):
 
 
 def main():
-    print(Fore.LIGHTWHITE_EX + 'Welcome to ArcadeCLI — console program made for fun.'
-          '\nType "help" to see the commands.')
+    print("Welcome to ArcadeCLI — console program made for fun.")
+    print("Type 'help' to see the commands.")
 
     while True:
         try:
@@ -49,11 +65,11 @@ def main():
             if not process_command(user_input):
                 break
         except KeyboardInterrupt:
-            print('\nTerminating the program.', end='')
+            print("\nGoodbye!")
             break
         except Exception as e:
-            print(f'Unexpected error: {e}')
+            print(f"Unexpected error: {e}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
