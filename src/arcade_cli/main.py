@@ -57,7 +57,7 @@ def process_command(command):
 
 def main():
     print("Welcome to ArcadeCLI — console program made for fun.")
-    print("Type 'help' to see the commands.")
+    print("Type 'help' for more information.")
 
     while True:
         try:

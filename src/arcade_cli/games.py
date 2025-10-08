@@ -22,7 +22,13 @@ def guess_number():
         attempts_left = max_attempts - attempts + 1
 
         try:
-            guess = int(input(f"{Fore.YELLOW}Attempt {attempts}/{max_attempts}. Enter your guess: {Fore.RESET}"))
+            guess = input(f"{Fore.YELLOW}Attempt {attempts}/{max_attempts}. Enter your guess: {Fore.RESET}")
+
+            if guess in ('q', 'quit', 'exit', 'back'):
+                print(f"{Fore.LIGHTBLACK_EX}The number was {number}. Exiting the game...{Fore.RESET}\n")
+                break
+
+            guess = int(guess)
 
             if guess < 1 or guess > 100:
                 print(f"{Fore.RED}Please enter a number between 1 and 100.{Fore.RESET}")
@@ -42,7 +48,7 @@ def guess_number():
             print(f"{Fore.RED}Please enter a valid number.{Fore.RESET}")
             attempts -= 1
         except KeyboardInterrupt:
-            print(f"\n{Fore.YELLOW}Game interrupted. The number was {number}.{Fore.RESET}.")
+            print(f"\n{Fore.LIGHTBLACK_EX}Game interrupted. The number was {number}.{Fore.RESET}\n")
             return
 
     if attempts > max_attempts:
@@ -61,14 +67,13 @@ def rock_paper_scissors():
 
     print(f"\n{Fore.CYAN}Rock Paper Scissors Game")
     print(f"Type 'rock', 'paper', or 'scissors' to play.")
-    print(f"Type 'quit' to return to game menu.{Fore.RESET}\n")
 
     while True:
         try:
             player_choice = input(f"{Fore.YELLOW}Your choice (rock/paper/scissors): {Fore.RESET}").strip().lower()
 
-            if player_choice in ('quit', 'exit', 'back'):
-                print(f"{Fore.YELLOW}Returning to game menu...{Fore.RESET}")
+            if player_choice in ('q', 'quit', 'exit', 'back'):
+                print(f"{Fore.LIGHTBLACK_EX}Exiting the game...{Fore.RESET}\n")
                 break
 
             if player_choice not in choices:
@@ -95,7 +100,7 @@ def rock_paper_scissors():
             print(f"{Fore.CYAN}Score: {wins} wins, {losses} losses, {ties} ties{Fore.RESET}.\n")
 
         except KeyboardInterrupt:
-            print(f"\n{Fore.YELLOW}Game interrupted.{Fore.RESET}")
+            print(f"\n{Fore.LIGHTBLACK_EX}Game interrupted.{Fore.RESET}")
             break
         except Exception as e:
             print(f"{Fore.RED}An error occurred: {e}{Fore.RESET}")
@@ -150,6 +155,8 @@ def show_games_list():
         print(f"{Fore.YELLOW}{game_id}. {game_info['title']}{Fore.RESET}")
         print(f"   {game_info['description']}")
         print(f"   {Fore.LIGHTBLACK_EX}Command: {game_info['name']}{Fore.RESET}")
+    print("\nTo quit any game, type 'q'.\n")
+    print("To view abbreviated names for games, type 'abbr'.\n")
 
 
 def get_game_by_input(user_input):
@@ -207,10 +214,10 @@ def game_mode():
 
     while True:
         try:
-            user_input = input(f"\n{Fore.GREEN}games> {Fore.RESET}").strip().lower()
+            user_input = input(f"{Fore.GREEN}games> {Fore.RESET}").strip().lower()
 
             if user_input in ('back', 'quit', 'exit', 'return'):
-                print(f"{Fore.LIGHTBLACK_EX}Returning to main menu...{Fore.RESET}")
+                print(f"{Fore.LIGHTBLACK_EX}Returning to main menu...{Fore.RESET}\n")
                 break
 
             elif user_input in ('list', 'help', '?'):
