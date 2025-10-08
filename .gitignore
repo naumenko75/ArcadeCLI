@@ -19,3 +19,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
