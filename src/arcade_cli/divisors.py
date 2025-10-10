@@ -63,10 +63,12 @@ def divisors_mode(args):
                 return
 
             number, divisor_count = find_number_with_most_divisors(start, end)
-            print(f"Number with most divisors in range [{start}, {end}]: {number} ({divisor_count} divisors)")
+            print(
+                f"Number with most divisors in range [{start}, {end}]: {number} ({divisor_count} divisors)")
 
         else:
-            print("Too many arguments. Usage: divisors [number] OR divisors [start] [end]")
+            print(
+                "Too many arguments. Usage: divisors [number] OR divisors [start] [end]")
 
     except ValueError:
         print("Please enter valid integers.")

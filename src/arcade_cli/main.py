@@ -1,6 +1,7 @@
-from colorama import Fore, init
 from games import game_mode, start_game_by_input
+from utilities import datetime_mode, timer_mode
 from divisors import divisors_mode
+from colorama import Fore, init
 
 init(autoreset=True)
 
@@ -10,7 +11,13 @@ HELP_MESSAGE = (
     "· games — enter game selection mode\n"
     "· game [name/number] — quick launch a specific game\n"
     "· divisors [number] — show the number of divisors for a given number\n"
-    "· divisors [start] [end] — find the number with the most divisors in a range\n")
+    "· divisors [start] [end] — find the number with the most divisors in a range\n"
+    "· time (t) <'info'> — show current time | time additional information\n"
+    "· data (d) <'info> — show today's date | date additional information\n"
+    "· datatime (dt) — show today's date and current time \n"
+    "· timer [seconds] — start a countdown timer\n"
+    "· timer [MM:SS] — start timer with minutes:seconds\n"
+    "· timer stop — stop active timer\n")
 
 
 def process_command(command):
@@ -39,15 +46,21 @@ def process_command(command):
         game_mode()
 
     elif cmd == 'game':
-        # Quick launch specific game
         if not args:
-            print(f"{Fore.YELLOW}Usage: game [game_number] or game [game_name]{Fore.RESET}")
+            print(
+                f"{Fore.YELLOW}Usage: game [game_number] or game [game_name]{Fore.RESET}")
             print(f"Type {Fore.CYAN}games{Fore.RESET} to see available games")
         else:
             start_game_by_input(" ".join(args))
 
     elif cmd == 'divisors':
         divisors_mode(args)
+
+    elif cmd in ('date', 'd', 'time', 't', 'datetime', 'dt'):
+        datetime_mode(cmd, args)
+
+    elif cmd == 'timer':
+        timer_mode(args)
 
     else:
         print(f"Unknown command '{command}'.")

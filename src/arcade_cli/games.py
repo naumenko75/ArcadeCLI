@@ -1,5 +1,5 @@
-import random
 from colorama import Fore, init
+import random
 
 init(autoreset=True)
 
@@ -36,8 +36,7 @@ def guess_number():
                 continue
 
             if guess == number:
-                print(
-                    f"{Fore.GREEN}Congratulations! You guessed the number {number} in {attempts} attempts!{Fore.RESET}")
+                print(f"{Fore.GREEN}Congratulations! You guessed the number {number} in {attempts} attempts!{Fore.RESET}\n")
                 break
             elif guess < number:
                 print(f"Too low! {attempts_left} attempts remaining.")
@@ -66,7 +65,7 @@ def rock_paper_scissors():
     ties = 0
 
     print(f"\n{Fore.CYAN}Rock Paper Scissors Game")
-    print(f"Type 'rock', 'paper', or 'scissors' to play.")
+    print(f"Type 'rock', 'paper', or 'scissors' to play.\n")
 
     while True:
         try:
@@ -217,7 +216,7 @@ def game_mode():
             user_input = input(f"{Fore.GREEN}games> {Fore.RESET}").strip().lower()
 
             if user_input in ('back', 'quit', 'exit', 'return'):
-                print(f"{Fore.LIGHTBLACK_EX}Returning to main menu...{Fore.RESET}\n")
+                print(f"{Fore.LIGHTBLACK_EX}Returning to hub...{Fore.RESET}\n")
                 break
 
             elif user_input in ('list', 'help', '?'):
@@ -233,7 +232,7 @@ def game_mode():
                     print(f"Type {Fore.YELLOW}list{Fore.RESET} to see available games.")
 
         except KeyboardInterrupt:
-            print(f"\n{Fore.LIGHTBLACK_EX}Returning to main menu...{Fore.RESET}")
+            print(f"\n{Fore.LIGHTBLACK_EX}Returning to hub...{Fore.RESET}\n")
             break
         except Exception as e:
             print(f"{Fore.RED}Unexpected error: {e}{Fore.RESET}")
