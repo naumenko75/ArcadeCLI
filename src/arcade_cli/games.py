@@ -19,7 +19,7 @@ def guess_number():
 
     while attempts < max_attempts:
         attempts += 1
-        attempts_left = max_attempts - attempts + 1
+        attempts_left = max_attempts - attempts
 
         try:
             guess = input(f"{Fore.YELLOW}Attempt {attempts}/{max_attempts}. Enter your guess: {Fore.RESET}")
@@ -46,12 +46,12 @@ def guess_number():
         except ValueError:
             print(f"{Fore.RED}Please enter a valid number.{Fore.RESET}")
             attempts -= 1
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
             print(f"\n{Fore.LIGHTBLACK_EX}Game interrupted. The number was {number}.{Fore.RESET}\n")
             return
 
-    if attempts > max_attempts:
-        print(f"{Fore.RED}Game over! The number was {number}. Better luck next time!{Fore.RESET}")
+    if attempts == max_attempts:
+        print(f"{Fore.RED}Game over! The number was {number}. Better luck next time!{Fore.RESET}\n")
 
 
 def rock_paper_scissors():
@@ -98,7 +98,7 @@ def rock_paper_scissors():
 
             print(f"{Fore.CYAN}Score: {wins} wins, {losses} losses, {ties} ties{Fore.RESET}.\n")
 
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
             print(f"\n{Fore.LIGHTBLACK_EX}Game interrupted.{Fore.RESET}")
             break
         except Exception as e:
@@ -154,7 +154,7 @@ def show_games_list():
         print(f"{Fore.YELLOW}{game_id}. {game_info['title']}{Fore.RESET}")
         print(f"   {game_info['description']}")
         print(f"   {Fore.LIGHTBLACK_EX}Command: {game_info['name']}{Fore.RESET}")
-    print("\nTo quit any game, type 'q'.\n")
+    print("\nTo quit any game, type 'q'.")
     print("To view abbreviated names for games, type 'abbr'.\n")
 
 
@@ -208,8 +208,8 @@ def game_mode():
     """
     Interactive game selection mode
     """
-    print(f"\n{Fore.CYAN}You are in game mode!{Fore.RESET} Enter game number or name to play.")
-    print("Type 'list' to see available games or 'back' to return to main menu.")
+    print(f"{Fore.CYAN}You are in game mode!{Fore.RESET} Enter game number or name to play.")
+    print("Type 'list' to see available games or 'back' to return to main menu.\n")
 
     while True:
         try:

@@ -6,18 +6,19 @@ from colorama import Fore, init
 init(autoreset=True)
 
 HELP_MESSAGE = (
-    "\n· help — show this list\n"
-    "· quit — exit the program\n"
-    "· games — enter game selection mode\n"
-    "· game [name/number] — quick launch a specific game\n"
-    "· divisors [number] — show the number of divisors for a given number\n"
-    "· divisors [start] [end] — find the number with the most divisors in a range\n"
-    "· time (t) <'info'> — show current time | time additional information\n"
-    "· data (d) <'info> — show today's date | date additional information\n"
-    "· datatime (dt) — show today's date and current time \n"
-    "· timer [seconds] — start a countdown timer\n"
-    "· timer [MM:SS] — start timer with minutes:seconds\n"
-    "· timer stop — stop active timer\n")
+	"Available commands:\n"
+    "   help - show this list\n"
+    "   exit - exit the program\n"
+    "	games - enter game selection mode\n"
+    "	game [name/number] - quick launch a specific game\n"
+    "	divisors [number] - show the number of divisors for a given number\n"
+    "	divisors [start] [end] - find the number with the most divisors in a range\n"
+    "	time (t) <'info'> - show current time | time additional information\n"
+    "	data (d) <'info'> - show today's date | date additional information\n"
+    "	datatime (dt) - show today's date and current time \n"
+	"	eval - evaluate an arithmetic expression\n"
+	"	say - output text to the terminal\n"
+)
 
 
 def process_command(command):
@@ -36,7 +37,7 @@ def process_command(command):
     args = parts[1:]
 
     if cmd in ('quit', 'exit'):
-        print("Goodbye!")
+        print("See you!")
         return False
 
     elif cmd in ('help', '?'):
@@ -47,8 +48,7 @@ def process_command(command):
 
     elif cmd == 'game':
         if not args:
-            print(
-                f"{Fore.YELLOW}Usage: game [game_number] or game [game_name]{Fore.RESET}")
+            print(f"{Fore.YELLOW}Usage: game [game_number] or game [game_name]{Fore.RESET}")
             print(f"Type {Fore.CYAN}games{Fore.RESET} to see available games")
         else:
             start_game_by_input(" ".join(args))
@@ -58,9 +58,6 @@ def process_command(command):
 
     elif cmd in ('date', 'd', 'time', 't', 'datetime', 'dt'):
         datetime_mode(cmd, args)
-
-    elif cmd == 'timer':
-        timer_mode(args)
 
     else:
         print(f"Unknown command '{command}'.")
@@ -77,8 +74,8 @@ def main():
             user_input = input(Fore.GREEN + '>>> ' + Fore.RESET)
             if not process_command(user_input):
                 break
-        except KeyboardInterrupt:
-            print("\nGoodbye!")
+        except (KeyboardInterrupt, EOFError):
+            print("\nThe program was interrupted by a user.")
             break
         except Exception as e:
             print(f"Unexpected error: {e}")
